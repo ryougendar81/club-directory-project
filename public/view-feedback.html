@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Admin | Feedback</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f8fafc; margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 260px; background: #1e293b; color: white; padding: 40px 30px; }
+        .sidebar-brand { font-size: 1.5rem; font-weight: 600; color: #6366f1; margin-bottom: 50px; text-decoration: none; display: block;}
+        .sidebar-link { display: block; padding: 15px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 5px; }
+        .sidebar-link:hover, .active { background: rgba(99,102,241,0.1); color: #818cf8; }
+        .content { flex: 1; padding: 50px; overflow-y: auto; }
+        .panel { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #f1f5f9; padding: 15px; text-align: left; }
+        th { color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="admin.html" class="sidebar-brand">Admin Console</a>
+        <a href="admin.html" class="sidebar-link">Overview</a>
+        <a href="create-club.html" class="sidebar-link">Add Club</a>
+        <a href="create-event.html" class="sidebar-link">Add Event</a>
+        <a href="view-feedback.html" class="sidebar-link active">View Feedback</a>
+    </div>
+    <div class="content">
+        <h1>Student Feedback Report</h1>
+        <div class="panel">
+            <button onclick="loadFeedback()" style="background:#10b981; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; margin-bottom:20px;">Refresh Data</button>
+            <div id="fb-view"></div>
+        </div>
+    </div>
+    <script>
+        async function loadFeedback() {
+            const res = await fetch('/api/admin/all-feedback');
+            const data = await res.json();
+            const view = document.getElementById('fb-view');
+            
+            if (!data.length) {
+                view.innerHTML = "<p>No feedback found.</p>";
+                return;
+            }
+
+            let html = `<table><tr><th>Student</th><th>Event</th><th>Rating</th><th>Comments</th></tr>`;
+            html += data.map(f => `
+                <tr>
+                    <td><b>${f.membership?.users?.name || 'Anonymous'}</b></td>
+                    <td>${f.events?.event_name || 'N/A'}</td>
+                    <td>${'⭐'.repeat(f.rating)}</td>
+                    <td><i>"${f.comments}"</i></td>
+                </tr>
+            `).join('');
+            view.innerHTML = html + "</table>";
+        }
+        window.onload = loadFeedback;
+    </script>
+</body>
+</html>

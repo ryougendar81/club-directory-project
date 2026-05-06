@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Login | Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: #0f172a; height: 100vh; display: flex; align-items: center; justify-content: center; color: white; }
+        .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 40px; border-radius: 24px; width: 350px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; outline: none; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 10px; border: none; background: #6366f1; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #4f46e5; transform: translateY(-2px); }
+        a { color: #818cf8; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="margin-bottom: 30px;">Sign In</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="College Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p style="margin-top: 20px; font-size: 0.85rem; opacity: 0.7;">Not registered? <a href="register.html">Sign up</a></p>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: document.getElementById('email').value, password: document.getElementById('password').value })
+            });
+            const result = await res.json();
+            if (result.success) {
+                localStorage.setItem('studentId', result.user.id);
+                window.location.href = result.user.role === 'admin' ? 'admin.html' : 'dashboard.html';
+            } else alert("Invalid credentials!");
+        });
+    </script>
+</body>
+</html>
